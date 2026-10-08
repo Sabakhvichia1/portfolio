@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
+/* Design tokens. Change --accent to re-color the whole site. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0a0a0b;
+  --surface: #121214;
+  --surface-2: #18181b;
+  --border: #242428;
+  --border-strong: #34343a;
+  --text: #ededef;
+  --muted: #8b8b94;
+  --faint: #5c5c64;
+  --accent: #4fe0b6;
+  --accent-ink: #04140f;
+  --bad: #f2685b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-bad: var(--bad);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Small uppercase label above headings. */
+.eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Corner tick marks around a block, like crop marks. */
+.ticks {
+  position: relative;
+  --tick: 14px;
+  --tick-color: var(--border-strong);
+}
+.ticks::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--tick-color), var(--tick-color)) top left / var(--tick) 1px,
+    linear-gradient(var(--tick-color), var(--tick-color)) top left / 1px var(--tick),
+    linear-gradient(var(--tick-color), var(--tick-color)) top right / var(--tick) 1px,
+    linear-gradient(var(--tick-color), var(--tick-color)) top right / 1px var(--tick),
+    linear-gradient(var(--tick-color), var(--tick-color)) bottom left / var(--tick) 1px,
+    linear-gradient(var(--tick-color), var(--tick-color)) bottom left / 1px var(--tick),
+    linear-gradient(var(--tick-color), var(--tick-color)) bottom right / var(--tick) 1px,
+    linear-gradient(var(--tick-color), var(--tick-color)) bottom right / 1px var(--tick);
+  background-repeat: no-repeat;
+}
+
+/* Faint dotted grid used behind panels. */
+.dot-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--text) 9%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Scroll-in reveal (see components/reveal.tsx). */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Bars grow in when their chart becomes visible. */
+.bar {
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.bar-v {
+  transform-origin: center bottom;
+  transform: scaleY(0);
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-visible="true"] .bar,
+[data-visible="true"] .bar-v {
+  transform: none;
+}
+
+/* The scrolling line at the very top. */
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ticker-track {
+  animation: ticker 70s linear infinite;
+}
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .bar,
+  .bar-v {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .ticker-track {
+    animation: none;
+  }
 }
